@@ -1,0 +1,53 @@
+import express from 'express';
+import bodyParser from 'body-parser';
+import mongoose from 'mongoose';
+import { UserController } from './controllers/user.controller';
+import { UserService } from './services/user.service';
+import { UserRepository } from './repositories/user.repository';
+import { startGrpcServer } from './config/grpc.server';
+import { connectRabbitMQ } from './services/rabbitmq.service';
+import { body } from 'express-validator';
+
+const app = express();
+const PORT = 3000;
+
+// Middleware
+app.use(bodyParser.json());
+
+// Database connection
+mongoose.connect('mongodb://mongo:27017/user-service')
+    .then(() => console.log('Connected to MongoDB'))
+    .catch(err => console.error('MongoDB connection error:', err));
+
+// Initialize services
+const userRepository = new UserRepository();
+const userService = new UserService(userRepository);
+const userController = new UserController(userService);
+
+// Routes
+app.post('/users', 
+    [
+        body('name').notEmpty().withMessage('Name is required'),
+        body('email').isEmail().withMessage('Valid email is required'),
+        body('age').isInt({ min: 1 }).withMessage('Age must be a positive integer')
+    ],
+    userController.createUser.bind(userController)
+);
+
+app.get('/users/:id', userController.getUser.bind(userController));
+app.put('/users/:id', userController.updateUser.bind(userController));
+
+// Start gRPC server
+startGrpcServer();
+
+// Connect to RabbitMQ
+connectRabbitMQ().then(() => {
+    console.log('Connected to RabbitMQ');
+}).catch(err => {
+    console.error('RabbitMQ connection error:', err);
+});
+
+// Start HTTP server
+app.listen(PORT, () => {
+    console.log(`User Service running on port ${PORT}`);
+});
