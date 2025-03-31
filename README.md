@@ -10,7 +10,6 @@ Prueba tecnica BackEnd MID - Diseño e implementación de 2 microservicios que s
 ### Service B (Notification Service)
 - Envío de notificaciones y registro de logs
 - Puerto: 50052 (gRPC), 3001 (HTTP)
-- http://localhost:3001/api-docs/
 
 ## Requisitos
 - Docker
