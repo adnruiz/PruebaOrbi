@@ -16,6 +16,10 @@ Prueba tecnica BackEnd MID - Diseño e implementación de 2 microservicios que s
 - Docker
 - Docker Compose
 
+## Swagger Documentation:
+- service-a: http://localhost:3000/api-docs/#/
+- service-b: http://localhost:3001/api-docs/#/
+
 ## Instalación
 ```bash
 git clone https://github.com/adnruiz/PruebaOrbi.git
