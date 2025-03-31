@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import { UserController } from './controllers/user.controller';
@@ -31,11 +31,18 @@ app.post('/users',
         body('email').isEmail().withMessage('Valid email is required'),
         body('age').isInt({ min: 1 }).withMessage('Age must be a positive integer')
     ],
-    userController.createUser.bind(userController)
+    (req: Request, res: Response, next: NextFunction) => {
+        userController.createUser(req, res).catch(next);
+    }
 );
+    
+app.get('/users/:id', (req: Request, res: Response, next: NextFunction) => {
+    userController.getUser(req, res).catch(next);
+});
 
-app.get('/users/:id', userController.getUser.bind(userController));
-app.put('/users/:id', userController.updateUser.bind(userController));
+app.put('/users/:id', (req: Request, res: Response, next: NextFunction) => {
+    userController.updateUser(req, res).catch(next);
+});
 
 // Start gRPC server
 startGrpcServer();

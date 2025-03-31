@@ -26,12 +26,12 @@ export function startGrpcServer() {
         '0.0.0.0:50051',
         grpc.ServerCredentials.createInsecure(),
         (err, port) => {
-        if (err) {
-            console.error('Failed to start gRPC server:', err);
-            return;
-        }
-        console.log(`gRPC server running on port ${port}`);
-        server.start();
+            if (err) {
+                console.error('Failed to start gRPC server:', err);
+                return;
+            }
+            console.log(`gRPC server running on port ${port}`);
+            server.start();
         }
     );
 }
