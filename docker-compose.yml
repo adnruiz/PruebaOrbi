@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  service-a:
+    command: sh -c "while ! nc -z rabbitmq 5672; do sleep 1; done && npm start"
+    build:
+      context: ./service-a
+      dockerfile: Dockerfile
+    volumes:
+      - ./service-a/protos:/usr/src/app/protos
+    ports:
+      - "3000:3000"
+      - "50051:50051"
+    depends_on:
+      - mongo
+      - rabbitmq
+    environment:
+      - NODE_ENV=production
+    networks:
+      - microservices-network
+
+  service-b:
+    build:
+      context: ./service-b
+      dockerfile: Dockerfile
+    #command: ["./wait-for.sh", "rabbitmq:5672", "npm", "start", "run"]
+    #command: ["rabbitmq:5672", "npm", "start"]
+    command: sh -c "while ! nc -z rabbitmq 5672; do sleep 1; done && npm start"
+    ports:
+      - "3001:3001"
+      - "50052:50052"
+    depends_on:
+      - mongo
+      - rabbitmq
+      - service-a
+    environment:
+      - NODE_ENV=production
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+    networks:
+      - microservices-network
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - microservices-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - microservices-network
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mongo-data:
+  rabbitmq-data:
+
+networks:
+  microservices-network:
+    driver: bridge
