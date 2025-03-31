@@ -28,6 +28,8 @@
   "dependencies": {
     "@grpc/grpc-js": "^1.13.2",
     "@grpc/proto-loader": "^0.7.13",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.5",
     "body-parser": "^2.2.0",
@@ -35,6 +37,8 @@
     "express-validator": "^7.2.1",
     "google-protobuf": "^3.21.4",
     "mongoose": "^8.13.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "winston": "^3.17.0"
   }
 }

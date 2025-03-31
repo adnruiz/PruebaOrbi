@@ -7,12 +7,18 @@ import { UserRepository } from './repositories/user.repository';
 import { startGrpcServer } from './config/grpc.server';
 import { connectRabbitMQ } from './services/rabbitmq.service';
 import { body } from 'express-validator';
+import { createSwaggerSpec2 } from './config/swagger';
+import swaggerUi from 'swagger-ui-express';
 
 const app = express();
 const PORT = 3000;
 
 // Middleware
 app.use(bodyParser.json());
+
+// Swagger documentation
+const swaggerSpec = createSwaggerSpec2();
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Database connection
 mongoose.connect('mongodb://mongo:27017/user-service')
